@@ -3,7 +3,7 @@ import random
 
 WIDTH = 1000
 HEIGHT = 800
-
+clock = pygame.time.Clock()
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
 bg = pygame.image.load("sky.png")
 bg = pygame.transform.scale(bg, (1000,800))
@@ -25,7 +25,7 @@ class pipe(pygame.sprite.Sprite):
         self.rect = self.image.get_rect() 
         if dir == 1:
             self.image = pygame.transform.flip(self.image, False, True)
-            self.rect.bottom = x,y - (pipe_gap/2)
+            self.rect.bottomleft = x,y - (pipe_gap/2)
         if dir == -1 :
             self.rect.topleft = x,y + (pipe_gap/2)
     def update (self):
@@ -75,20 +75,22 @@ while run:
             pygame.quit()
         if event.type == pygame.MOUSEBUTTONDOWN and flying == False and game == False :
             flying = True
-
+    clock.tick(60)
     screen.fill("sky blue")
     screen.blit(bg, (0,0))
     screen.blit(ground, (ground_x,650))
-    ground_x -= 2
     bird_group.draw(screen)
     bird_group.update()
     pipe_group.draw(screen)
+    if flappy.rect.bottom > 950:
+        game = True 
+        flying = False
     if game == False and flying == True:
         time_now = pygame.time.get_ticks()
         if time_now - last_pipe > pipe_frequency:
             pipe_height = random.randint( -100,100)
             bottom_pipe = pipe(WIDTH,HEIGHT/2+pipe_height, -1)
-            top_pipe = pipe(WIDTH,HEIGHT+2/2 +pipe_height, 1)
+            top_pipe = pipe(WIDTH,HEIGHT/2+pipe_height, 1)
             pipe_group.add(bottom_pipe)
             pipe_group.add(top_pipe)
             last_pipe = time_now
